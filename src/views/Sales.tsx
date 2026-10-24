@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/Badge';
 import { SearchInput, EmptyState, StatPill } from '@/components/ui/misc';
 import { CustomerPicker } from '@/components/CustomerPicker';
 import { QuickCustomerCreate } from '@/components/QuickCustomerCreate';
+import { ProductImage } from '@/components/ProductImage';
 import { ShoppingCart, Plus, Search, Eye, Ban, Package, X, Receipt, Trash2 } from 'lucide-react';
 
 interface Props {
@@ -278,18 +279,19 @@ export function SaleForm({ onClose, onSaved, showToast, prefillCustomer }: { onC
                 className="input-base pl-9"
               />
             </div>
-            <div className="grid gap-2 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-2">
               {filteredProducts.map((p) => (
                 <button
                   key={p.id}
                   onClick={() => addToCart(p.id)}
-                  className="flex items-center justify-between rounded-lg border border-cream-200 bg-white px-3.5 py-2.5 text-left transition hover:border-terracota-200 hover:bg-terracota-50/40"
+                  aria-label={`Agregar ${p.name}`}
+                  className="group overflow-hidden rounded-xl border border-cream-200 bg-white text-left transition hover:-translate-y-0.5 hover:border-terracota-300 hover:shadow-card"
                 >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-charcoal-900">{p.name}</p>
-                    <p className="text-xs text-charcoal-700/60">{formatCOP(p.unit_price)}</p>
+                  <ProductImage src={p.image_url} alt={p.name} className="h-28 w-full transition duration-300 group-hover:scale-[1.02]" iconSize={26} />
+                  <div className="flex items-center justify-between gap-2 p-3">
+                    <div className="min-w-0"><p className="truncate text-sm font-semibold text-charcoal-900">{p.name}</p><p className="mt-0.5 text-sm font-bold text-terracota-600">{formatCOP(p.unit_price)}</p></div>
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-terracota-50 text-terracota-500 transition group-hover:bg-terracota-500 group-hover:text-white"><Plus size={17} /></span>
                   </div>
-                  <Plus size={16} className="shrink-0 text-terracota-500" />
                 </button>
               ))}
               {filteredProducts.length === 0 && <p className="text-sm text-charcoal-700/50 py-4">Sin productos</p>}
@@ -318,7 +320,7 @@ export function SaleForm({ onClose, onSaved, showToast, prefillCustomer }: { onC
                   {cart.map((c) => (
                     <div key={c.product_id} className="rounded-lg border border-cream-200 bg-white p-2.5">
                       <div className="flex items-start justify-between gap-2">
-                        <p className="text-sm font-semibold text-charcoal-900 leading-tight">{c.product_name}</p>
+                        <div className="flex min-w-0 items-center gap-2"><ProductImage src={products.find((p) => p.id === c.product_id)?.image_url} alt={c.product_name} className="h-10 w-10 shrink-0 rounded-lg" iconSize={15} /><p className="truncate text-sm font-semibold text-charcoal-900 leading-tight">{c.product_name}</p></div>
                         <button onClick={() => removeItem(c.product_id)} className="text-charcoal-700/40 hover:text-red-500"><X size={14} /></button>
                       </div>
                       <div className="mt-2 flex items-center gap-2">

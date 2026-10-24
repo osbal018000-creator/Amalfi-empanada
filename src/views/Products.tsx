@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { Modal, Confirm } from '@/components/ui/Modal';
 import { Field, Input, Textarea, Select } from '@/components/ui/Form';
 import { Badge } from '@/components/ui/Badge';
+import { ProductImage } from '@/components/ProductImage';
 import { SearchInput, EmptyState } from '@/components/ui/misc';
 import { Package, Plus, Pencil, History, TrendingUp, ToggleLeft, ToggleRight, Trash2 } from 'lucide-react';
 
@@ -82,6 +83,7 @@ export function Products({ showToast }: Props) {
             const profit = grossProfitPerUnit(Number(p.unit_price), Number(p.unit_cost));
             return (
               <div key={p.id} className="card card-hover flex flex-col p-4">
+                <ProductImage src={p.image_url} alt={p.name} className="-mx-4 -mt-4 mb-4 h-36 rounded-t-xl" iconSize={30} />
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <h3 className="font-display text-base font-bold text-charcoal-900">{p.name}</h3>
@@ -240,9 +242,14 @@ function ProductForm({ product, onClose, onSaved, showToast }: { product: Produc
         <Field label="Categoría">
           <Input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Empanadas" />
         </Field>
-        <Field label="Imagen (URL, opcional)">
+        <Field label="Imagen (URL, opcional)" hint="Pega el enlace directo a la imagen; verás una vista previa abajo">
           <Input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://…" />
         </Field>
+        {imageUrl.trim() && (
+          <div className="sm:col-span-2 overflow-hidden rounded-xl border border-cream-200 bg-cream-50">
+            <ProductImage src={imageUrl.trim()} alt={name || 'Vista previa del producto'} className="h-40 w-full" iconSize={30} />
+          </div>
+        )}
         <Field label="Precio de venta por unidad" required error={errors.unitPrice}>
           <Input type="number" min="0" step="50" value={unitPrice} onChange={(e) => setUnitPrice(e.target.value)} placeholder="3500" invalid={!!errors.unitPrice} />
         </Field>
