@@ -65,7 +65,7 @@ export function Orders({ showToast, onViewOrder }: Props) {
           />
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="stagger grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {filtered.map((o) => {
             const items = orderItems.filter((i) => i.order_id === o.id);
             const pays = payments.filter((p) => p.order_id === o.id);
@@ -74,7 +74,7 @@ export function Orders({ showToast, onViewOrder }: Props) {
             const balance = orderBalance(totals.total, pays);
             const cust = customers.find((c) => c.id === o.customer_id);
             return (
-              <div key={o.id} className="card p-4">
+              <div key={o.id} className="card card-hover p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="font-display text-sm font-bold text-charcoal-900">Pedido #{o.number}</p>

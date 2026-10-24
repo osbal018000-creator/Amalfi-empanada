@@ -52,13 +52,18 @@ export function Layout({ current, onNavigate, onNewSale, onNewOrder, children }:
               onNavigate(item.key);
               setMobileOpen(false);
             }}
-            className={`group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-all ${
+            aria-current={active ? 'page' : undefined}
+            className={`group relative flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-all duration-300 ease-out-expo btn-press ${
               active
-                ? 'bg-terracota-500 text-white shadow-soft'
-                : 'text-charcoal-700 hover:bg-cream-100'
+                ? 'bg-gradient-to-r from-terracota-500 to-terracota-400 text-white shadow-glow'
+                : 'text-charcoal-700 hover:bg-cream-100 hover:translate-x-0.5'
             }`}
           >
-            <span className={active ? 'text-white' : 'text-charcoal-700/60 group-hover:text-terracota-500'}>
+            <span
+              className={`transition-transform duration-300 ease-spring ${
+                active ? 'text-white scale-110' : 'text-charcoal-700/60 group-hover:text-terracota-500 group-hover:scale-110'
+              }`}
+            >
               {item.icon}
             </span>
             {item.label}
@@ -71,9 +76,9 @@ export function Layout({ current, onNavigate, onNewSale, onNewOrder, children }:
   return (
     <div className="min-h-screen bg-cream-50">
       {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-cream-200 bg-white lg:flex">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-cream-200 bg-gradient-to-b from-white to-cream-50 lg:flex">
         <div className="flex items-center gap-2.5 px-5 py-5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-terracota-500 text-white shadow-soft">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-terracota-400 to-terracota-600 text-white shadow-glow">
             <ClipboardCheck size={20} />
           </div>
           <div>
@@ -90,11 +95,11 @@ export function Layout({ current, onNavigate, onNewSale, onNewOrder, children }:
       {/* Mobile drawer */}
       {mobileOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
-          <div className="absolute inset-0 bg-charcoal-900/40 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-          <aside className="absolute inset-y-0 left-0 w-72 max-w-[85%] bg-white shadow-card animate-fade-in">
+          <div className="absolute inset-0 bg-charcoal-900/40 backdrop-blur-sm animate-overlay-in" onClick={() => setMobileOpen(false)} />
+          <aside className="absolute inset-y-0 left-0 w-72 max-w-[85%] bg-white shadow-lift animate-drawer-in">
             <div className="flex items-center justify-between px-5 py-5">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-terracota-500 text-white">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-terracota-400 to-terracota-600 text-white shadow-glow">
                   <ClipboardCheck size={20} />
                 </div>
                 <p className="font-display text-sm font-extrabold text-charcoal-900">Doña Empanada</p>
@@ -110,12 +115,12 @@ export function Layout({ current, onNavigate, onNewSale, onNewOrder, children }:
 
       {/* Main */}
       <div className="lg:pl-64">
-        <header className="sticky top-0 z-20 border-b border-cream-200 bg-cream-50/90 backdrop-blur-md">
+        <header className="sticky top-0 z-20 border-b border-cream-200/80 bg-cream-50/80 backdrop-blur-xl">
           <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-6">
             <div className="flex items-center gap-3 min-w-0">
               <button
                 onClick={() => setMobileOpen(true)}
-                className="rounded-lg p-2 text-charcoal-700 hover:bg-cream-100 lg:hidden"
+                className="rounded-lg p-2 text-charcoal-700 transition hover:bg-cream-100 btn-press lg:hidden"
               >
                 <Menu size={20} />
               </button>
@@ -129,7 +134,7 @@ export function Layout({ current, onNavigate, onNewSale, onNewOrder, children }:
             <div className="flex items-center gap-2">
               <button
                 onClick={onNewOrder}
-                className="hidden items-center gap-1.5 rounded-lg border border-cream-200 bg-white px-3.5 py-2 text-sm font-semibold text-charcoal-800 transition hover:bg-cream-50 sm:inline-flex"
+                className="btn-press hidden items-center gap-1.5 rounded-lg border border-cream-200 bg-white px-3.5 py-2 text-sm font-semibold text-charcoal-800 transition-all duration-200 hover:border-terracota-200 hover:bg-terracota-50 hover:text-terracota-600 sm:inline-flex"
               >
                 <ClipboardList size={16} />
                 <span className="hidden md:inline">Nuevo pedido</span>
@@ -137,7 +142,7 @@ export function Layout({ current, onNavigate, onNewSale, onNewOrder, children }:
               </button>
               <button
                 onClick={onNewSale}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-terracota-500 px-3.5 py-2 text-sm font-semibold text-white shadow-soft transition hover:bg-terracota-600"
+                className="btn-press inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-terracota-500 to-terracota-400 px-3.5 py-2 text-sm font-semibold text-white shadow-soft transition-all duration-200 hover:-translate-y-px hover:shadow-glow"
               >
                 <Plus size={16} />
                 <span className="hidden md:inline">Registrar venta</span>
@@ -146,7 +151,9 @@ export function Layout({ current, onNavigate, onNewSale, onNewOrder, children }:
             </div>
           </div>
         </header>
-        <main className="px-4 py-5 sm:px-6 sm:py-6">{children}</main>
+        <main className="px-4 py-5 sm:px-6 sm:py-6">
+          <div key={current} className="animate-page-in">{children}</div>
+        </main>
       </div>
     </div>
   );

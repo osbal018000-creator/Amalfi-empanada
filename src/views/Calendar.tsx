@@ -70,7 +70,7 @@ export function Calendar({ onCreateOrderForDate, onViewOrder }: Props) {
         </div>
         <div className="flex rounded-lg border border-cream-200 bg-white p-0.5">
           {(['day', 'week', 'month'] as View[]).map((v) => (
-            <button key={v} onClick={() => setView(v)} className={`rounded-md px-3 py-1.5 text-xs font-semibold capitalize transition ${view === v ? 'bg-terracota-500 text-white' : 'text-charcoal-700 hover:bg-cream-100'}`}>{v === 'day' ? 'Día' : v === 'week' ? 'Semana' : 'Mes'}</button>
+            <button key={v} onClick={() => setView(v)} className={`rounded-md px-3 py-1.5 text-xs font-semibold capitalize transition-all duration-200 btn-press ${view === v ? 'bg-terracota-500 text-white shadow-soft' : 'text-charcoal-700 hover:bg-cream-100'}`}>{v === 'day' ? 'Día' : v === 'week' ? 'Semana' : 'Mes'}</button>
           ))}
         </div>
       </div>
@@ -145,7 +145,7 @@ function WeekView({ cursor, ordersForDay, statusColor, selectedDay, onSelect }: 
         const isToday = sameDay(day, new Date());
         const isSelected = selectedDay && sameDay(day, selectedDay);
         return (
-          <button key={day.toISOString()} onClick={() => onSelect(day)} className={`min-h-[160px] rounded-lg border p-2 text-left transition ${isSelected ? 'border-terracota-300 bg-terracota-50/60' : 'border-cream-200 bg-white hover:bg-cream-50'}`}>
+          <button key={day.toISOString()} onClick={() => onSelect(day)} className={`min-h-[160px] rounded-lg border p-2 text-left transition-all duration-200 ease-out-expo hover:-translate-y-0.5 hover:shadow-card ${isSelected ? 'border-terracota-300 bg-terracota-50/60 shadow-soft' : 'border-cream-200 bg-white hover:border-terracota-200 hover:bg-cream-50'}`}>
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-xs font-semibold uppercase text-charcoal-700/50">{WEEKDAY_LABELS[(day.getDay() + 6) % 7]}</span>
               <span className={`text-xs font-bold ${isToday ? 'flex h-5 w-5 items-center justify-center rounded-full bg-terracota-500 text-white' : 'text-charcoal-800'}`}>{day.getDate()}</span>
@@ -174,7 +174,7 @@ function DayView({ cursor, ordersForDay, onViewOrder }: { cursor: Date; ordersFo
       {ords.length === 0 ? <p className="py-10 text-center text-sm text-charcoal-700/50">No hay pedidos programados</p> : (
         <div className="space-y-2">
           {ords.map((o) => (
-            <button key={o.id} onClick={() => onViewOrder(o.id)} className="flex w-full items-center justify-between rounded-lg border border-cream-200 px-3 py-2.5 text-left hover:bg-cream-50">
+            <button key={o.id} onClick={() => onViewOrder(o.id)} className="btn-press flex w-full items-center justify-between rounded-lg border border-cream-200 px-3 py-2.5 text-left transition-all duration-200 hover:border-terracota-200 hover:bg-cream-50 hover:shadow-soft">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-cream-100 text-charcoal-700/60"><Clock size={16} /></div>
                 <div><p className="text-sm font-semibold text-charcoal-900">Pedido #{o.number}</p><p className="text-xs text-charcoal-700/60">{o.delivery_at ? formatTime(o.delivery_at) : 'Sin hora'}</p></div>
@@ -223,7 +223,7 @@ function DaySummary({ day, summary, onViewOrder, onCreateOrder }: { day: Date; s
               const totals = computeOrderTotals(items, Number(o.discount));
               const cust = customers.find((c) => c.id === o.customer_id);
               return (
-                <button key={o.id} onClick={() => onViewOrder(o.id)} className="flex w-full items-center justify-between rounded-lg border border-cream-200 px-3 py-2 text-left hover:bg-cream-50">
+                <button key={o.id} onClick={() => onViewOrder(o.id)} className="btn-press flex w-full items-center justify-between rounded-lg border border-cream-200 px-3 py-2 text-left transition-all duration-200 hover:border-terracota-200 hover:bg-cream-50 hover:shadow-soft">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-charcoal-900">#{o.number} · {cust?.name || 'Sin cliente'}</p>
                     <p className="text-xs text-charcoal-700/60">{o.delivery_at ? formatTime(o.delivery_at) : 'Sin hora'} · {formatCOP(totals.total)}</p>

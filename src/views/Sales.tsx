@@ -110,7 +110,7 @@ export function Sales({ showToast }: Props) {
                   const cust = customers.find((c) => c.id === s.customer_id);
                   const pm = paymentMethods.find((m) => m.id === s.method_id);
                   return (
-                    <tr key={s.id} className={`hover:bg-cream-50/60 ${s.is_voided ? 'opacity-50' : ''}`}>
+                    <tr key={s.id} className={`transition-colors duration-200 hover:bg-terracota-50/40 ${s.is_voided ? 'opacity-50' : ''}`}>
                       <td className="px-4 py-3 font-bold text-charcoal-900">#{s.number}</td>
                       <td className="px-4 py-3 text-charcoal-700/80">{formatDate(s.created_at)}</td>
                       <td className="px-4 py-3 font-medium text-charcoal-800">{cust?.name || 'Sin cliente'}</td>
@@ -120,15 +120,15 @@ export function Sales({ showToast }: Props) {
                       <td className="px-4 py-3 text-center">{s.is_voided ? <Badge tone="red">Anulada</Badge> : <Badge tone="green">Vigente</Badge>}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-1">
-                          <button onClick={() => setViewing(s.id)} className="rounded-lg p-1.5 text-charcoal-700/60 hover:bg-cream-100 hover:text-terracota-500" title="Ver detalle">
+                          <button onClick={() => setViewing(s.id)} className="btn-press rounded-lg p-1.5 text-charcoal-700/60 transition-all hover:bg-cream-100 hover:text-terracota-500" title="Ver detalle">
                             <Eye size={15} />
                           </button>
                           {!s.is_voided && (
-                            <button onClick={() => setVoiding(s.id)} className="rounded-lg p-1.5 text-charcoal-700/40 hover:bg-red-50 hover:text-red-500" title="Anular">
+                            <button onClick={() => setVoiding(s.id)} className="btn-press rounded-lg p-1.5 text-charcoal-700/40 transition-all hover:bg-red-50 hover:text-red-500" title="Anular">
                               <Ban size={15} />
                             </button>
                           )}
-                          <button onClick={() => setDeleting(s.id)} className="rounded-lg p-1.5 text-charcoal-700/40 hover:bg-red-50 hover:text-red-500" title="Eliminar">
+                          <button onClick={() => setDeleting(s.id)} className="btn-press rounded-lg p-1.5 text-charcoal-700/40 transition-all hover:bg-red-50 hover:text-red-500" title="Eliminar">
                             <Trash2 size={15} />
                           </button>
                         </div>

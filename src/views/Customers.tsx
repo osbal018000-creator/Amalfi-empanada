@@ -77,7 +77,7 @@ export function Customers({ showToast }: Props) {
                 {filtered.map((c) => {
                   const st = statsFor(c);
                   return (
-                    <tr key={c.id} className="hover:bg-cream-50/60">
+                    <tr key={c.id} className="transition-colors duration-200 hover:bg-terracota-50/40">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2.5">
                           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-terracota-50 text-terracota-500">
@@ -100,10 +100,10 @@ export function Customers({ showToast }: Props) {
                       <td className="px-4 py-3 text-center font-semibold text-charcoal-800">{st.sales}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-1">
-                          <button onClick={() => { setEditing(c); setShowForm(true); }} className="rounded-lg p-1.5 text-charcoal-700/60 hover:bg-cream-100 hover:text-terracota-500" title="Editar">
+                          <button onClick={() => { setEditing(c); setShowForm(true); }} className="btn-press rounded-lg p-1.5 text-charcoal-700/60 transition-all hover:bg-cream-100 hover:text-terracota-500" title="Editar">
                             <Pencil size={15} />
                           </button>
-                          <button onClick={() => setConfirmDelete(c)} className="rounded-lg p-1.5 text-charcoal-700/40 hover:bg-red-50 hover:text-red-500" title="Eliminar">
+                          <button onClick={() => setConfirmDelete(c)} className="btn-press rounded-lg p-1.5 text-charcoal-700/40 transition-all hover:bg-red-50 hover:text-red-500" title="Eliminar">
                             <Trash2 size={15} />
                           </button>
                         </div>

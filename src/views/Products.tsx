@@ -76,12 +76,12 @@ export function Products({ showToast }: Props) {
           />
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="stagger grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {filtered.map((p) => {
             const margin = grossMarginPercent(Number(p.unit_price), Number(p.unit_cost));
             const profit = grossProfitPerUnit(Number(p.unit_price), Number(p.unit_cost));
             return (
-              <div key={p.id} className="card flex flex-col p-4">
+              <div key={p.id} className="card card-hover flex flex-col p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <h3 className="font-display text-base font-bold text-charcoal-900">{p.name}</h3>

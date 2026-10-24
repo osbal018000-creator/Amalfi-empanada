@@ -9,7 +9,7 @@ import { Customers } from '@/views/Customers';
 import { Products } from '@/views/Products';
 import { Reports } from '@/views/Reports';
 import { Settings } from '@/views/Settings';
-import { Toast, useToast } from '@/components/ui/misc';
+import { Toast, useToast, DashboardSkeleton } from '@/components/ui/misc';
 import { orderWithDetails } from '@/lib/data';
 import { Confirm } from '@/components/ui/Modal';
 import type { Customer, OrderStatus } from '@/lib/types';
@@ -141,9 +141,7 @@ function AppShell() {
       onNewOrder={openNewOrder}
     >
       {data.loading ? (
-        <div className="flex items-center justify-center py-24">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-terracota-200 border-t-terracota-500" />
-        </div>
+        <DashboardSkeleton />
       ) : (
         <>
           {view === 'dashboard' && <Dashboard onNavigate={navigate} onNewSale={openNewSale} />}

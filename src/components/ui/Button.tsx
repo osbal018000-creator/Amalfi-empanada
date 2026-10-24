@@ -13,7 +13,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variants: Record<Variant, string> = {
   primary:
-    'bg-terracota-500 text-white hover:bg-terracota-600 active:bg-terracota-700 shadow-soft disabled:bg-terracota-300',
+    'bg-gradient-to-b from-terracota-400 to-terracota-500 text-white hover:from-terracota-500 hover:to-terracota-600 active:from-terracota-600 active:to-terracota-700 shadow-soft hover:shadow-glow disabled:from-terracota-300 disabled:to-terracota-300 disabled:shadow-none',
   secondary:
     'bg-charcoal-800 text-white hover:bg-charcoal-900 active:bg-black shadow-soft disabled:bg-charcoal-700/60',
   ghost:
@@ -41,7 +41,7 @@ export const Button = forwardRef<HTMLButtonElement, Props>(function Button(
     <button
       ref={ref}
       disabled={disabled || loading}
-      className={`inline-flex items-center justify-center font-semibold whitespace-nowrap transition-all duration-150 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-terracota-200 ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`inline-flex items-center justify-center font-semibold whitespace-nowrap transition-all duration-200 ease-out-expo active:scale-[0.97] disabled:active:scale-100 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-terracota-200 ${variants[variant]} ${sizes[size]} ${className}`}
       {...rest}
     >
       {loading ? (

@@ -119,7 +119,7 @@ export function Dashboard({ onNavigate, onNewSale }: { onNavigate: (v: any) => v
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-cream-200 bg-white p-1">
           {(['today', 'week', 'month', 'year', 'custom'] as PeriodKey[]).map((p) => (
-            <button key={p} onClick={() => setPeriod(p)} className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${period === p ? 'bg-terracota-500 text-white' : 'text-charcoal-700 hover:bg-cream-100'}`}>
+            <button key={p} onClick={() => setPeriod(p)} className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all duration-200 btn-press ${period === p ? 'bg-terracota-500 text-white shadow-soft' : 'text-charcoal-700 hover:bg-cream-100'}`}>
               {p === 'today' ? 'Hoy' : p === 'week' ? 'Semana' : p === 'month' ? 'Mes' : p === 'year' ? 'Año' : 'Personalizado'}
             </button>
           ))}
@@ -148,7 +148,7 @@ export function Dashboard({ onNavigate, onNewSale }: { onNavigate: (v: any) => v
       ) : (
         <>
           {/* KPI cards */}
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="stagger grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <KpiCard icon={<ShoppingBag size={18} />} label="Ventas realizadas" value={formatCOP(kpis.salesTotal)} delta={kpis.deltaSales} tone="terracota" />
             <KpiCard icon={<Wallet size={18} />} label="Ingresos recibidos" value={formatCOP(kpis.moneyReceived)} delta={kpis.deltaMoney} tone="green" />
             <KpiCard icon={<Package size={18} />} label="Costo de productos vendidos" value={formatCOP(kpis.salesCost)} tone="amber" />
@@ -232,7 +232,7 @@ export function Dashboard({ onNavigate, onNewSale }: { onNavigate: (v: any) => v
                         <span className="flex items-center gap-2 truncate"><span className="flex h-5 w-5 items-center justify-center rounded-full bg-cream-100 text-[10px] font-bold text-charcoal-700">{i + 1}</span><span className="truncate font-semibold text-charcoal-900">{p.name}</span></span>
                         <span className="ml-2 shrink-0 font-semibold text-charcoal-800">{formatNumber(p.units)}u</span>
                       </div>
-                      <div className="mt-1 h-1.5 w-full rounded-full bg-cream-100"><div className="h-full rounded-full bg-terracota-400" style={{ width: `${(p.units / (productRanking[0]?.units || 1)) * 100}%` }} /></div>
+                      <div className="mt-1 h-1.5 w-full rounded-full bg-cream-100"><div className="h-full rounded-full bg-gradient-to-r from-terracota-300 to-terracota-500 transition-[width] duration-700 ease-out-expo" style={{ width: `${(p.units / (productRanking[0]?.units || 1)) * 100}%` }} /></div>
                     </div>
                   ))}
                 </div>
@@ -271,9 +271,9 @@ export function Dashboard({ onNavigate, onNewSale }: { onNavigate: (v: any) => v
 function KpiCard({ icon, label, value, delta, tone }: { icon: React.ReactNode; label: string; value: string; delta?: number | null; tone: 'terracota' | 'green' | 'amber' }) {
   const toneClass = { terracota: 'bg-terracota-50 text-terracota-500', green: 'bg-emerald-50 text-emerald-600', amber: 'bg-amber-50 text-amber-600' }[tone];
   return (
-    <div className="card p-4">
+    <div className="card card-hover group p-4">
       <div className="flex items-start justify-between">
-        <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${toneClass}`}>{icon}</div>
+        <div className={`flex h-10 w-10 items-center justify-center rounded-xl transition-transform duration-300 ease-spring group-hover:scale-110 group-hover:-rotate-3 ${toneClass}`}>{icon}</div>
         {delta !== undefined && delta !== null && (
           <span className={`flex items-center gap-0.5 text-xs font-semibold ${delta >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
             {delta >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}{Math.abs(delta).toFixed(0)}%
@@ -289,7 +289,7 @@ function KpiCard({ icon, label, value, delta, tone }: { icon: React.ReactNode; l
 function ChartTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-lg border border-cream-200 bg-white px-3 py-2 text-xs shadow-card">
+    <div className="rounded-xl border border-cream-200 bg-white/95 px-3 py-2 text-xs shadow-lift backdrop-blur">
       <p className="mb-1 font-bold text-charcoal-900">{label}</p>
       {payload.map((p: any, i: number) => (
         <p key={i} style={{ color: p.color }} className="font-semibold">{p.name}: {formatCOP(p.value)}</p>
