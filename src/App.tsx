@@ -9,6 +9,8 @@ import { Customers } from '@/views/Customers';
 import { Products } from '@/views/Products';
 import { Reports } from '@/views/Reports';
 import { Settings } from '@/views/Settings';
+import { Login } from '@/views/Login';
+import { useSession } from '@/lib/auth';
 import { Toast, useToast, DashboardSkeleton } from '@/components/ui/misc';
 import { orderWithDetails } from '@/lib/data';
 import { Confirm } from '@/components/ui/Modal';
@@ -16,7 +18,7 @@ import type { Customer, OrderStatus } from '@/lib/types';
 import { supabase } from '@/lib/supabase';
 import { computeOrderTotals, orderBalance } from '@/lib/calc';
 
-function AppShell() {
+function AppShell({ userEmail, onSignOut }: { userEmail?: string; onSignOut: () => void }) {
   const data = useData();
   const { toast, show } = useToast();
   const [view, setView] = useState<ViewKey>('dashboard');
@@ -139,6 +141,8 @@ function AppShell() {
       onNavigate={navigate}
       onNewSale={openNewSale}
       onNewOrder={openNewOrder}
+      userEmail={userEmail}
+      onSignOut={onSignOut}
     >
       {data.loading ? (
         <DashboardSkeleton />
@@ -237,9 +241,21 @@ function AppShell() {
 }
 
 export default function App() {
+  const { session, loading } = useSession();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-cream-50 p-6">
+        <DashboardSkeleton />
+      </div>
+    );
+  }
+  // Sin sesión no se carga ningún dato: solo la pantalla de inicio de sesión.
+  if (!session) return <Login />;
+
   return (
     <DataProvider>
-      <AppShell />
+      <AppShell userEmail={session.user.email} onSignOut={() => { void supabase.auth.signOut(); }} />
     </DataProvider>
   );
 }

@@ -6,6 +6,7 @@ import { Modal, Confirm } from '@/components/ui/Modal';
 import { Field, Input } from '@/components/ui/Form';
 import { Badge } from '@/components/ui/Badge';
 import { NotificationSettingsCard } from '@/components/NotifyActions';
+import { AccountCard } from '@/components/AccountCard';
 import { Settings as SettingsIcon, CreditCard, Plus, Pencil, Trash2, Store, Info, Database, Check, RotateCcw } from 'lucide-react';
 import { formatCOP, formatDate } from '@/lib/format';
 
@@ -19,6 +20,7 @@ export function Settings({ showToast }: Props) {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [resetOpen, setResetOpen] = useState(false);
   const [resetting, setResetting] = useState(false);
+  const [resetText, setResetText] = useState('');
 
   async function saveMethod() {
     if (!editing || !editing.name.trim()) return;
@@ -44,9 +46,36 @@ export function Settings({ showToast }: Props) {
     refresh();
   }
 
-  async function resetHistory() {
+  function closeReset() {
     if (resetting) return;
+    setResetOpen(false);
+    setResetText('');
+  }
+
+  async function resetHistory() {
+    if (resetting || resetText.trim().toUpperCase() !== 'BORRAR') return;
     setResetting(true);
+    // Camino principal: la función de la base de datos borra todo y reinicia la numeración desde 1.
+    const { error: rpcError } = await supabase.rpc('reset_history');
+    if (!rpcError) {
+      await refresh();
+      setResetting(false);
+      setResetOpen(false);
+      setResetText('');
+      showToast('Historial borrado. Los pedidos y ventas nuevos empezarán en #1.');
+      return;
+    }
+    // Si la función aún no existe en Supabase, se borra como antes (la numeración no se reinicia).
+    const missing = rpcError.code === 'PGRST202' || rpcError.code === '42883' || /reset_history/i.test(rpcError.message || '');
+    if (!missing) {
+      showToast('No se pudo borrar el historial', 'error');
+      setResetting(false);
+      return;
+    }
+    await legacyResetHistory();
+  }
+
+  async function legacyResetHistory() {
     const operations = [
       supabase.from('sale_items').delete().not('id', 'is', null),
       supabase.from('payments').delete().not('id', 'is', null),
@@ -68,7 +97,8 @@ export function Settings({ showToast }: Props) {
     await refresh();
     setResetting(false);
     setResetOpen(false);
-    showToast('Historial borrado. Productos y clientes se conservaron.');
+    setResetText('');
+    showToast('Historial borrado, pero la numeración no se reinició: falta ejecutar el SQL de reinicio en Supabase.', 'error');
   }
 
   const stats = [
@@ -127,6 +157,8 @@ export function Settings({ showToast }: Props) {
         </div>
       </div>
 
+      <AccountCard showToast={showToast} />
+
       <NotificationSettingsCard showToast={showToast} />
 
       <div className="card p-5">
@@ -151,7 +183,7 @@ export function Settings({ showToast }: Props) {
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-50 text-red-600"><RotateCcw size={18} /></div>
           <div>
             <h2 className="font-display text-base font-bold text-charcoal-900">Zona de pruebas</h2>
-            <p className="text-xs text-charcoal-700/60">Borra ventas, pedidos, abonos y sus detalles para comenzar nuevos experimentos.</p>
+            <p className="text-xs text-charcoal-700/60">Borra ventas, pedidos, abonos y sus detalles, y reinicia la numeración desde #1.</p>
           </div>
         </div>
         <Button variant="danger" leftIcon={<Trash2 size={15} />} onClick={() => setResetOpen(true)}>Borrar historial de movimientos</Button>
@@ -181,14 +213,29 @@ export function Settings({ showToast }: Props) {
         </Modal>
       )}
 
-      <Confirm
-        open={resetOpen}
-        title="Borrar todo el historial"
-        message="Se eliminarán permanentemente todas las ventas, pedidos, abonos y detalles. Los productos, clientes y métodos de pago se conservarán. ¿Deseas continuar?"
-        confirmLabel={resetting ? 'Borrando…' : 'Borrar historial'}
-        onConfirm={resetHistory}
-        onCancel={() => { if (!resetting) setResetOpen(false); }}
-      />
+      {resetOpen && (
+        <Modal
+          open
+          onClose={closeReset}
+          title="Borrar todo el historial"
+          size="sm"
+          footer={
+            <div className="flex justify-end gap-2">
+              <Button variant="ghost" onClick={closeReset} disabled={resetting}>Cancelar</Button>
+              <Button variant="danger" onClick={resetHistory} loading={resetting} disabled={resetText.trim().toUpperCase() !== 'BORRAR'} leftIcon={<Trash2 size={15} />}>Borrar historial</Button>
+            </div>
+          }
+        >
+          <div className="space-y-3">
+            <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+              Se eliminarán <strong>para siempre</strong> todos los pedidos, ventas, abonos y detalles, y la numeración volverá a empezar en #1. Productos, clientes y métodos de pago se conservan. <strong>No se puede deshacer.</strong>
+            </div>
+            <Field label="Para confirmar, escribe BORRAR">
+              <Input value={resetText} onChange={(e) => setResetText(e.target.value)} placeholder="BORRAR" autoFocus autoComplete="off" />
+            </Field>
+          </div>
+        </Modal>
+      )}
 
       <Confirm
         open={!!confirmDelete}

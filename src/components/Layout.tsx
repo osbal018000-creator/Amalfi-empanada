@@ -1,7 +1,7 @@
 import { type ReactNode, useState } from 'react';
 import {
   LayoutDashboard, ShoppingCart, ClipboardList, CalendarDays, Users,
-  Package, BarChart3, Settings as SettingsIcon, Menu, X, Plus, ClipboardCheck,
+  Package, BarChart3, Settings as SettingsIcon, Menu, X, Plus, ClipboardCheck, LogOut,
 } from 'lucide-react';
 
 export type ViewKey =
@@ -30,10 +30,12 @@ interface Props {
   onNavigate: (v: ViewKey) => void;
   onNewSale: () => void;
   onNewOrder: () => void;
+  userEmail?: string;
+  onSignOut?: () => void;
   children: ReactNode;
 }
 
-export function Layout({ current, onNavigate, onNewSale, onNewOrder, children }: Props) {
+export function Layout({ current, onNavigate, onNewSale, onNewOrder, userEmail, onSignOut, children }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [quickOpen, setQuickOpen] = useState(false);
 
@@ -73,6 +75,18 @@ export function Layout({ current, onNavigate, onNewSale, onNewOrder, children }:
     </nav>
   );
 
+  const accountBlock = onSignOut ? (
+    <div className="border-t border-cream-200 px-3 py-3">
+      {userEmail && <p className="mb-1.5 truncate px-2 text-[11px] text-charcoal-700/50" title={userEmail}>{userEmail}</p>}
+      <button
+        onClick={onSignOut}
+        className="btn-press flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-semibold text-charcoal-700 transition hover:bg-red-50 hover:text-red-600"
+      >
+        <LogOut size={17} /> Cerrar sesión
+      </button>
+    </div>
+  ) : null;
+
   return (
     <div className="min-h-screen bg-cream-50">
       {/* Desktop sidebar */}
@@ -87,6 +101,7 @@ export function Layout({ current, onNavigate, onNewSale, onNewOrder, children }:
           </div>
         </div>
         <div className="flex-1 overflow-y-auto px-3 py-2">{navList}</div>
+        {accountBlock}
         <div className="border-t border-cream-200 px-5 py-3">
           <p className="text-[11px] text-charcoal-700/40">v1.0 · EmpanasApp</p>
         </div>
@@ -108,7 +123,10 @@ export function Layout({ current, onNavigate, onNewSale, onNewOrder, children }:
                 <X size={20} />
               </button>
             </div>
-            <div className="px-3 py-2">{navList}</div>
+            <div className="flex h-[calc(100%-5rem)] flex-col justify-between">
+              <div className="overflow-y-auto px-3 py-2">{navList}</div>
+              {accountBlock}
+            </div>
           </aside>
         </div>
       )}

@@ -25,6 +25,27 @@ interface DataState {
 
 const Ctx = createContext<DataState | null>(null);
 
+/**
+ * Supabase devuelve como máximo 1.000 filas por consulta. Para que los totales
+ * no queden incompletos, se piden páginas de 1.000 hasta traer todo.
+ */
+const PAGE_SIZE = 1000;
+async function fetchAll<T>(table: string, order: { column: string; ascending: boolean }[]): Promise<T[]> {
+  const rows: T[] = [];
+  for (let from = 0; ; from += PAGE_SIZE) {
+    let q = supabase.from(table).select('*');
+    for (const o of order) q = q.order(o.column, { ascending: o.ascending });
+    const { data, error } = await q.range(from, from + PAGE_SIZE - 1);
+    if (error) {
+      console.error(`Error cargando ${table}:`, error.message);
+      break;
+    }
+    rows.push(...((data as T[]) || []));
+    if (!data || data.length < PAGE_SIZE) break;
+  }
+  return rows;
+}
+
 export function useData() {
   const ctx = useContext(Ctx);
   if (!ctx) throw new Error('useData must be used within DataProvider');
@@ -58,23 +79,23 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const refreshOrders = useCallback(async () => {
-    const [{ data: o }, { data: oi }, { data: pay }] = await Promise.all([
-      supabase.from('orders').select('*').order('created_at', { ascending: false }),
-      supabase.from('order_items').select('*'),
-      supabase.from('payments').select('*').order('paid_at', { ascending: false }),
+    const [o, oi, pay] = await Promise.all([
+      fetchAll<Order>('orders', [{ column: 'created_at', ascending: false }, { column: 'id', ascending: true }]),
+      fetchAll<OrderItem>('order_items', [{ column: 'id', ascending: true }]),
+      fetchAll<Payment>('payments', [{ column: 'paid_at', ascending: false }, { column: 'id', ascending: true }]),
     ]);
-    setOrders((o as Order[]) || []);
-    setOrderItems((oi as OrderItem[]) || []);
-    setPayments((pay as Payment[]) || []);
+    setOrders(o);
+    setOrderItems(oi);
+    setPayments(pay);
   }, []);
 
   const refreshSales = useCallback(async () => {
-    const [{ data: s }, { data: si }] = await Promise.all([
-      supabase.from('sales').select('*').order('created_at', { ascending: false }),
-      supabase.from('sale_items').select('*'),
+    const [s, si] = await Promise.all([
+      fetchAll<Sale>('sales', [{ column: 'created_at', ascending: false }, { column: 'id', ascending: true }]),
+      fetchAll<SaleItem>('sale_items', [{ column: 'id', ascending: true }]),
     ]);
-    setSales((s as Sale[]) || []);
-    setSaleItems((si as SaleItem[]) || []);
+    setSales(s);
+    setSaleItems(si);
   }, []);
 
   const refresh = useCallback(async () => {
