@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Modal, Confirm } from '@/components/ui/Modal';
 import { Field, Input } from '@/components/ui/Form';
 import { Badge } from '@/components/ui/Badge';
+import { NotificationSettingsCard } from '@/components/NotifyActions';
 import { Settings as SettingsIcon, CreditCard, Plus, Pencil, Trash2, Store, Info, Database, Check, RotateCcw } from 'lucide-react';
 import { formatCOP, formatDate } from '@/lib/format';
 
@@ -125,6 +126,8 @@ export function Settings({ showToast }: Props) {
           {paymentMethods.length === 0 && <p className="py-4 text-center text-sm text-charcoal-700/50">Sin métodos de pago</p>}
         </div>
       </div>
+
+      <NotificationSettingsCard showToast={showToast} />
 
       <div className="card p-5">
         <div className="flex items-center gap-2.5 mb-3">

@@ -12,7 +12,8 @@ import { SearchInput, EmptyState, StatPill } from '@/components/ui/misc';
 import { CustomerPicker } from '@/components/CustomerPicker';
 import { QuickCustomerCreate } from '@/components/QuickCustomerCreate';
 import { ProductImage } from '@/components/ProductImage';
-import { ClipboardList, Plus, Search, Eye, X, Package, ClipboardCheck, CheckCircle2, Wallet, Trash2 } from 'lucide-react';
+import { OrderNotifyActions, DeliverySummaryModal } from '@/components/NotifyActions';
+import { ClipboardList, Plus, Search, Eye, X, Package, ClipboardCheck, CheckCircle2, Wallet, Trash2, BellRing } from 'lucide-react';
 
 interface Props {
   showToast: (m: string, t?: 'success' | 'error') => void;
@@ -25,6 +26,7 @@ export function Orders({ showToast, onViewOrder }: Props) {
   const [query, setQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | OrderStatus>('all');
   const [viewing, setViewing] = useState<string | null>(null);
+  const [summaryOpen, setSummaryOpen] = useState(false);
 
   const filtered = orders.filter((o) => {
     if (statusFilter !== 'all' && o.status !== statusFilter) return false;
@@ -55,6 +57,7 @@ export function Orders({ showToast, onViewOrder }: Props) {
             <option value="cancelado">Cancelados</option>
           </Select>
         </div>
+        <Button variant="outline" leftIcon={<BellRing size={16} />} onClick={() => setSummaryOpen(true)}>Resumen de entregas</Button>
       </div>
 
       {filtered.length === 0 ? (
@@ -114,6 +117,8 @@ export function Orders({ showToast, onViewOrder }: Props) {
           })}
         </div>
       )}
+
+      {summaryOpen && <DeliverySummaryModal onClose={() => setSummaryOpen(false)} />}
 
       {viewingOrder && (
         <OrderDetailModal
@@ -389,6 +394,7 @@ export function OrderDetailModal({ order, paymentMethods, onClose, onPay, onCanc
           )}
         </div>
         {order.notes && <div className="rounded-lg bg-cream-50 px-3 py-2.5 text-sm text-charcoal-700/80"><strong>Observaciones:</strong> {order.notes}</div>}
+        {order.status !== 'cancelado' && <OrderNotifyActions order={order} />}
       </div>
     </Modal>
   );
